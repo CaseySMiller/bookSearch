@@ -5,9 +5,9 @@ const { signToken } = require('../utils/auth');
 const resolvers = {
     Query: {
         // get a single user
-        getSingleUser: async (parent, { user = null, _id }) => {
+        getSingleUser: async (parent, { user = null, _id }, { username }) => {
             return User.findOne({
-                $or: [{ _id: user ? user._id : params.id }, { username: params.username }],
+                $or: [{ _id: user ? user._id : _id }, { username: username }],
             });
         },
         me: async (parent, args, context) => {
@@ -42,11 +42,11 @@ const resolvers = {
             return { token, user };
         },
         // save a book to a user's `savedBooks` field by adding it to the set (to prevent duplicates)
-        saveBook: async (parent, args, context) => {
+        saveBook: async (parent, { book }, context) => {
             if (context.user) {
                 return User.findOneAndUpdate(
                     { _id: context.user._id },
-                    { $addToSet: { savedBooks: args } },
+                    { $addToSet: { savedBooks: book } },
                     { new: true, runValidators: true }
                 );
             };
