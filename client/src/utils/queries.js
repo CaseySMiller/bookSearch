@@ -6,7 +6,6 @@ export const GET_USER = gql`
             _id
             username
             email
-            savedBooks
         }
     }
 `;
@@ -17,7 +16,6 @@ export const ME = gql`
             _id
             username
             email
-            savedBooks
         }
     }
 `;

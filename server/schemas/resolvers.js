@@ -11,6 +11,7 @@ const resolvers = {
             });
         },
         me: async (parent, args, context) => {
+            console.log('i am trying')
             if (context.user) {
                 return User.findOne({ _id: context.user._id });
             }
@@ -25,9 +26,10 @@ const resolvers = {
             const token = signToken(user);
             return { token, user };
         },
-        // log in user by email or username and password
-        login: async (parent, { username, email, password }) => {
-            const user = await User.findOne({ $or: [{ username: username }, { email: email }] })
+        // log in user by email and password
+        login: async (parent, { email, password }) => {
+            console.log(`this is being called`);
+            const user = await User.findOne( { email: email } )
             if (!user) {
                 throw new AuthenticationError('No user with this email or username found!');
             }
