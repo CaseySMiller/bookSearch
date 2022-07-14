@@ -23,7 +23,7 @@ const resolvers = {
         createUser: async (parent, args) => {
             const user = await User.create(args);
             const token = signToken(user);
-            return { token, profile };
+            return { token, user };
         },
         // log in user by email or username and password
         login: async (parent, { username, email, password }) => {
