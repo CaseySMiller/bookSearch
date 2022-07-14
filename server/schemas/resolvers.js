@@ -10,6 +10,12 @@ const resolvers = {
                 $or: [{ _id: user ? user._id : params.id }, { username: params.username }],
             });
         },
+        me: async (parent, args, context) => {
+            if (context.user) {
+                return User.findOne({ _id: context.user._id });
+            }
+            throw new AuthenticationError('You need to be logged in!');
+        },
     },
 
     Mutation: {
@@ -48,12 +54,12 @@ const resolvers = {
             throw new AuthenticationError('You need to be logged in!');
         },
         // remove a book from savedBooks
-        deleteBook: async (parent, args, context) => {
+        deleteBook: async (parent, { bookId }, context) => {
             console.log(context.user); // added for testing
             if (context.user) {
                 return User.findOneAndUpdate(
                     { _id: context.user._id },
-                    { $pull: { savedBooks: { bookId: args.bookId } } },
+                    { $pull: { savedBooks: { bookId: bookId } } },
                     { new: true, runValidators: true }
                 );
             };
