@@ -24,7 +24,6 @@ const SearchBooks = () => {
   useEffect(() => {
     return () => saveBookIds(savedBookIds);
   });
-
   // create method to search for books and set state on form submit
   const handleFormSubmit = async (event) => {
     event.preventDefault();
@@ -57,6 +56,7 @@ const SearchBooks = () => {
     }
   };
 
+
   // create function to handle saving a book to our database
   const handleSaveBook = async (bookId) => {
     // find the book in `searchedBooks` state by the matching id
@@ -71,7 +71,9 @@ const SearchBooks = () => {
     }
 
     try {
-      await saveBook(bookToSave.bookId);
+      await saveBook({
+        variables: { input: bookToSave, username: Auth.getProfile().data.username },
+      });
       if (error) {
         throw new Error(`something went wrong!`);
       }

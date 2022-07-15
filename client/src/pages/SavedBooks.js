@@ -1,79 +1,57 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Jumbotron, Container, CardColumns, Card, Button } from 'react-bootstrap';
+import { Navigate, useParams } from 'react-router-dom';
+
 import { useQuery, useMutation } from '@apollo/client';
 import { DELETE_BOOK } from '../utils/mutations';
 import Auth from '../utils/auth';
-import { GET_USER } from '../utils/queries';
+import { QUERY_USER, QUERY_ME } from '../utils/queries';
 import { removeBookId } from '../utils/localStorage';
 
 const SavedBooks = () => {
   const [userData, setUserData] = useState({});
-  console.log(userData);
-  // create state to hold delete book
   const [deleteBook, { error }] = useMutation(DELETE_BOOK);
-  const loggedInUser = Auth.getProfile().data;
-  const { loading, data } = useQuery(GET_USER,
-    {
-      variables: { ...loggedInUser },
-    }
-  );
-  console.log(data);
+
   // use this to determine if `useEffect()` hook needs to run again
-  const userDataLength = Object.keys(userData).length;
-  console.log(userDataLength);
+  // const userDataLength = Object.keys(userData).length;
+  // const { userParam } = useParams();
 
+  const { loading, data } = useQuery(QUERY_USER, {
+    variables: { username: Auth.getProfile().data.username },
+  });  
+  
   useEffect(() => {
+    const user = data?.me || data?.user || {};
+      setUserData(user);
+    }, [loading])
     
-    const getUserData = async () => {
-      try {
-        const token = Auth.loggedIn() ? Auth.getToken() : null;
-        
-        if (!token) {
-          return false;
-        }
-        const user = loggedInUser;
-        setUserData(user);
-        console.log('sucess!!!');
-
-      } catch (err) {
-        console.error('failure');
-      }
-    };
-
-    getUserData();
-  }, [0]);
-
-  // create function that accepts the book's mongo _id value as param and deletes the book from the database
+    // handler for deleting a book
   const handleDeleteBook = async (bookId) => {
     const token = Auth.loggedIn() ? Auth.getToken() : null;
-    console.log(bookId);
     if (!token) {
+      console.log('No Token!');
       return false;
     }
 
     try {
-      // code here----------------------------------------------------------
-      if (error) {
-        console.error(error);
-      }
-
       const updatedUser = await deleteBook({
-        variables: { bookId: bookId },
+        variables: { bookId: bookId, username: Auth.getProfile().data.username },
       });
-
+      console.log(updatedUser);
+      setUserData({});
       setUserData(updatedUser);
       // upon success, remove book's id from localStorage
       removeBookId(bookId);
+      window.location.reload();
     } catch (err) {
       console.error(err);
     }
   };
 
-  // if data isn't here yet, say so
-  if (!userDataLength) {
-    return <h2>LOADING...</h2>;
+  if (!userData?._id) {
+    console.log('Waiting for user data');
+    return <div><h1>Loading..........</h1></div>;
   }
-
   return (
     <>
       <Jumbotron fluid className='text-light bg-dark'>
@@ -83,7 +61,7 @@ const SavedBooks = () => {
       </Jumbotron>
       <Container>
         <h2>
-          {userData.savedBooks.length
+          {userData.savedBooks.length > 0
             ? `Viewing ${userData.savedBooks.length} saved ${userData.savedBooks.length === 1 ? 'book' : 'books'}:`
             : 'You have no saved books!'}
         </h2>
@@ -94,7 +72,9 @@ const SavedBooks = () => {
                 {book.image ? <Card.Img src={book.image} alt={`The cover for ${book.title}`} variant='top' /> : null}
                 <Card.Body>
                   <Card.Title>{book.title}</Card.Title>
-                  <p className='small'>Authors: {book.authors}</p>
+                  <p className='small'>
+                    Authors: {book.authors.map((author) => {return (` ${author},`)})}
+                  </p>
                   <Card.Text>{book.description}</Card.Text>
                   <Button className='btn-block btn-danger' onClick={() => handleDeleteBook(book.bookId)}>
                     Delete this Book!
