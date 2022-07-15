@@ -1,8 +1,13 @@
 {
   "name": "googlebooks-app",
   "version": "1.1.0",
+  "homepage": "",
   "description": "",
   "main": "server/server.js",
+  "engines" : { 
+    "npm" : "8.5.5",
+    "node" : "16.15.0"
+  },
   "scripts": {
     "start": "node server/server.js",
     "develop": "concurrently \"cd server && npm run watch\" \"cd client && npm start\"",
@@ -13,7 +18,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "concurrently": "^5.1.0"
+    "concurrently": "^5.1.0",
+    "gh-pages": "^4.0.0"
   },
   "dependencies": {
     "serve": "^14.0.1"
