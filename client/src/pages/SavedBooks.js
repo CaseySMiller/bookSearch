@@ -49,7 +49,6 @@ const SavedBooks = () => {
   };
 
   if (!userData?._id) {
-    console.log('Waiting for user data');
     return <div><h1>Loading..........</h1></div>;
   }
   return (

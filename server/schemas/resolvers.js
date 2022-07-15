@@ -25,7 +25,6 @@ const resolvers = {
         },
         // log in user by email and password
         login: async (parent, { email, password }) => {
-            console.log('this is SPARTA!!!!!');
             const user = await User.findOne({ email });
     
             if (!user) {
@@ -44,7 +43,6 @@ const resolvers = {
         },
         // save a book to a user's `savedBooks` field by adding it to the set (to prevent duplicates)
         saveBook: async (parent, { input: { authors, description, bookId, image, link, title }, username }) => {
-            console.log('saveBook function called'); 
             const newBook = {
                 authors: [],
                 description: description,
@@ -56,7 +54,6 @@ const resolvers = {
             authors.forEach(element => {
                 newBook.authors.push(element)
             });
-            console.log(newBook);
 
             if (bookId && username) {
                 return User.findOneAndUpdate(
