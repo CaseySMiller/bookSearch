@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
-require('dotenv').config();
+require('dotenv').config({ path: '../.env' });
 
 
 mongoose.connect(
-  process.env.MONGODB_URI ,
+  process.env.MONGO_DB_URI || 'mongodb://127.0.0.1:27017/googlebooks' ,
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -14,4 +14,4 @@ mongoose.connect(
 
 module.exports = mongoose.connection;
 
-// || 'mongodb://127.0.0.1:27017/googlebooks'
+// 
